@@ -17,6 +17,7 @@ jobs:
           echo $VERSION
           npm version $VERSION --no-git-tag-version --allow-same-version
           sed -i "s/SANDBOX/$VERSION/g" ./src/Configuration.ts
+          sed -i "s/SANDBOX/$VERSION/g" ./tests/Configuration.spec.ts
       - run: npm ci
       - run: npm test
       - run: npm run build
@@ -36,6 +37,7 @@ jobs:
           echo $VERSION
           npm version $VERSION --no-git-tag-version --allow-same-version
           sed -i "s/SANDBOX/$VERSION/g" ./src/Configuration.ts
+          sed -i "s/SANDBOX/$VERSION/g" ./tests/Configuration.spec.ts
       - run: npm ci
       - run: npm run build
       - run: npm publish
