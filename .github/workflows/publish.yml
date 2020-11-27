@@ -1,8 +1,8 @@
 name: Publish
 
-on:
-  release:
-    types: [created]
+on: 
+  push:
+    tags: '*'
 
 jobs:
   build:
@@ -12,8 +12,14 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+      - run: |
+          VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
+          npm version $VERSION
+          sed -i "s/SANDBOX/$VERSION/g" ./src/Configuration.ts
       - run: npm ci
       - run: npm test
+      - run: npm run build
+      - run: npm publish --dry-run
 
   publish-npm:
     needs: build
@@ -24,6 +30,10 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
+      - run: |
+          VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
+          npm version $VERSION
+          sed -i "s/SANDBOX/$VERSION/g" ./src/Configuration.ts
       - run: npm ci
       - run: npm run build
       - run: npm publish
