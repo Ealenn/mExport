@@ -29,7 +29,7 @@ npm i -g mexport@VERSION
 
 ---
 
-Or with **Docker** *(linux/amd64, linux/arm/v6, linux/arm/v7, linux/arm64, linux/386)*
+Or with **Docker** *(linux/amd64, linux/arm/v6, linux/arm/v7)*
 ``` bash
 docker run --rm -v ${PWD}/mexport:/data ealen/mexport:VERSION --help
 ```

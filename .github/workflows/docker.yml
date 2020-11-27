@@ -22,7 +22,7 @@ jobs:
         id: prepare
         run: |
           DOCKER_IMAGE=ealen/mexport
-          DOCKER_PLATFORMS=linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386
+          DOCKER_PLATFORMS=linux/amd64,linux/arm/v6,linux/arm/v7
           VERSION=snapshot
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
