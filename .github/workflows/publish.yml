@@ -14,7 +14,8 @@ jobs:
           node-version: 12
       - run: |
           VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
-          npm version $VERSION
+          echo $VERSION
+          npm version $VERSION --no-git-tag-version --allow-same-version
           sed -i "s/SANDBOX/$VERSION/g" ./src/Configuration.ts
       - run: npm ci
       - run: npm test
@@ -32,7 +33,8 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: |
           VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
-          npm version $VERSION
+          echo $VERSION
+          npm version $VERSION --no-git-tag-version --allow-same-version
           sed -i "s/SANDBOX/$VERSION/g" ./src/Configuration.ts
       - run: npm ci
       - run: npm run build
