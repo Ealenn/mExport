@@ -1,0 +1,91 @@
+{
+  "name": "mexport",
+  "version": "0.1.0",
+  "description": "Mail Export - Clean Mail Inbox - Unsubscribe spam email - View Accounts",
+  "main": "src/Main.ts",
+  "directories": {
+    "dist": "dist"
+  },
+  "bin": {
+    "mexport": "./dist/Main.js"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "build:watch": "rm -rf ./dist && tsc -p . -w",
+    "test": "jest --coverage",
+    "local": "npm run build && npm i -g && mexport",
+    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "ts-jest"
+    },
+    "testRegex": "(/tests/.*|\\.(spec))\\.(ts|tsx)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ],
+    "globals": {
+      "ts-jest": {
+        "compiler": "ttypescript"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ealenn/mExport.git"
+  },
+  "keywords": [
+    "mexport",
+    "email",
+    "inbox",
+    "clean",
+    "spam",
+    "smtp",
+    "mailbox"
+  ],
+  "author": "Rudy Marchandise",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ealenn/mExport/issues"
+  },
+  "homepage": "https://github.com/Ealenn/mExport#readme",
+  "dependencies": {
+    "@types/nodemailer": "^6.4.0",
+    "chalk": "^4.1.0",
+    "commander": "^6.2.0",
+    "figlet": "^1.5.0",
+    "nodemailer": "^6.4.16",
+    "prompts": "^2.4.0",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^5.22.3",
+    "sqlite3": "^5.0.0",
+    "tsyringe": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.5.33",
+    "@types/chai": "^4.2.14",
+    "@types/figlet": "^1.2.1",
+    "@types/jest": "^26.0.15",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^14.14.10",
+    "@types/prompts": "^2.0.9",
+    "@types/sequelize": "^4.28.9",
+    "@types/sinon": "^9.0.9",
+    "@types/validator": "^13.1.0",
+    "chai": "^4.2.0",
+    "jest": "^26.6.3",
+    "jest-ts-auto-mock": "^1.0.11",
+    "mocha": "^8.2.1",
+    "moq.ts": "^6.4.0",
+    "nodemon": "^2.0.6",
+    "sinon": "^9.2.1",
+    "ts-jest": "^26.4.4",
+    "ts-mock-imports": "^1.3.1",
+    "ts-node": "^9.0.0",
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.1.2"
+  }
+}
