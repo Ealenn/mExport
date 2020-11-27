@@ -14,7 +14,9 @@
     "build:watch": "rm -rf ./dist && tsc -p . -w",
     "test": "jest --coverage",
     "local": "npm run build && npm i -g && mexport",
-    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
+    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
+    "docker:run": "docker run --rm mexport:dev",
+    "docker:build": "docker buildx build . -t mexport:dev"
   },
   "jest": {
     "transform": {
