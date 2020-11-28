@@ -1,6 +1,6 @@
 import { Sequelize, Model, DataTypes, BuildOptions } from "sequelize";
 
-export interface ISMTPServer {
+export interface IMailServer {
   id: number;
   user: string;
   password: string;
@@ -9,7 +9,7 @@ export interface ISMTPServer {
   secure: boolean;
 }
 
-export class SMTPServer extends Model implements ISMTPServer {
+export class MailServer extends Model implements IMailServer {
   public id: number;
   public user: string;
   public password: string;
@@ -18,8 +18,9 @@ export class SMTPServer extends Model implements ISMTPServer {
   public secure: boolean;
 }
 
+/* istanbul ignore next */
 export const initializeModel = async (database: Sequelize) => {
-  SMTPServer.init(
+  MailServer.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -49,10 +50,12 @@ export const initializeModel = async (database: Sequelize) => {
       }
     },
     {
-      tableName: "smtp_servers",
+      tableName: "mail_servers",
       sequelize: database,
+      charset: 'utf8',
+      collate: 'utf8_general_ci'
     }
   );
 
-  await SMTPServer.sync({ force: false });
+  await MailServer.sync({ force: false });
 }

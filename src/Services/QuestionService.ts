@@ -1,6 +1,7 @@
 import { PromptObject, PromptType, PrevCaller, prompt } from 'prompts'
 import { IQuestionService } from "./Abstractions/IQuestionService";
 
+/* istanbul ignore file */
 export class QuestionService implements IQuestionService {
   public async Ask(type: PromptType, message: string, validate?: PrevCaller<any, boolean | string | Promise<boolean | string>>): Promise<any> {
     return await this.getValueOf({

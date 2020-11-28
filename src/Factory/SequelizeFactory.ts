@@ -2,7 +2,8 @@ import { Sequelize } from "sequelize";
 import { singleton, inject } from "tsyringe";
 import { IConfiguration } from "../Configuration";
 
-import { initializeModel as SMTPServerInit } from '../Database/Models/SMTPServer';
+import { initializeModel as MailServerInit } from '../Database/Models/MailServer';
+import { initializeModel as EmailInit } from '../Database/Models/Email';
 import { ISequelizeFactory } from "./Abstractions/ISequelizeFactory";
 
 @singleton()
@@ -23,7 +24,8 @@ export class SequelizeFactory implements ISequelizeFactory {
   }
 
   public async Init(): Promise<boolean> {
-    await SMTPServerInit(this._sequelize);
+    await MailServerInit(this._sequelize);
+    await EmailInit(this._sequelize);
     return true;
   }
 
