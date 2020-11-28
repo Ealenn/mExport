@@ -43,7 +43,7 @@ alias mexport='docker run --rm -v /tmp/mexport:/data ealen/mexport:latest'
 
 ## Getting Started
 
-### Login to Server
+### Login to Servers
 
 ``` bash
 # With Interactive Mode
@@ -56,6 +56,12 @@ mexport login \
   -s, --server [server] \
   -i, --port [port] \
   --secure
+```
+
+### Synchronize
+
+``` bash
+mexport synchronize
 ```
 
 ## Development

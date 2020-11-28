@@ -1,16 +1,16 @@
 import { inject, injectable } from "tsyringe";
 import ICommand from './Abstractions/ICommand';
-import { ISMTPServer, SMTPServer } from '../Database/Models/SMTPServer';
+import { IMailServer, MailServer } from '../Database/Models/MailServer';
 import { IQuestionService } from "../Services/Abstractions/IQuestionService";
-import { ISMTPService } from "../Services/Abstractions/ISMTPService";
+import { IMailService } from "../Services/Abstractions/IMailService";
 import { ILoggerService } from "../Services/Abstractions/ILoggerService";
-import { SMTPServerRepository } from "../Database/SMTPServerRepository";
+import { MailServerRepository } from "../Database/MailServerRepository";
 
 @injectable()
 export default class LoginCommand implements ICommand {
-  private _smtpServerRepository: SMTPServerRepository;
+  private _mailServerRepository: MailServerRepository;
   private _questionService: IQuestionService;
-  private _smtpService: ISMTPService;
+  private _mailService: IMailService;
   private _loggerService: ILoggerService;
 
   Command: string;
@@ -18,13 +18,13 @@ export default class LoginCommand implements ICommand {
   Options: string[];
 
   constructor(
-    @inject('SMTPServerRepository') smtpServerRepository: SMTPServerRepository,
+    @inject('MailServerRepository') mailServerRepository: MailServerRepository,
     @inject('IQuestionService') questionService: IQuestionService,
-    @inject('ISMTPService') smtpService: ISMTPService,
+    @inject('IMailService') mailService: IMailService,
     @inject('ILoggerService') loggerService: ILoggerService
   ) {
     this.Command = 'login';
-    this.Description = 'login to SMTP server';
+    this.Description = 'login to Mail server';
     this.Options = new Array<string>(
       '-u, --user [user]',
       '-p, --password [password]',
@@ -33,9 +33,9 @@ export default class LoginCommand implements ICommand {
       '--secure'
     );
 
-    this._smtpServerRepository = smtpServerRepository;
+    this._mailServerRepository = mailServerRepository;
     this._questionService = questionService;
-    this._smtpService = smtpService;
+    this._mailService = mailService;
     this._loggerService = loggerService;
   }
 
@@ -48,22 +48,23 @@ export default class LoginCommand implements ICommand {
       secure
     } = request;
 
-    let account: ISMTPServer = {
+    let account: IMailServer = {
       id: 0,
-      user: user ?? await this._questionService.Ask('text', 'What is your SMTP User ?'),
-      password: password ?? await this._questionService.Ask('password', 'What is your SMTP Password ?'),
-      server: server ?? await this._questionService.Ask('text', 'What is your SMTP Server ?'),
-      port: port ?? await this._questionService.Ask('number', 'What is your SMTP Port ?'),
+      user: user ?? await this._questionService.Ask('text', 'What is your Mail User ?'),
+      password: password ?? await this._questionService.Ask('password', 'What is your Mail Password ?'),
+      server: server ?? await this._questionService.Ask('text', 'What is your Mail Server ?'),
+      port: port ?? await this._questionService.Ask('number', 'What is your Mail Port ?'),
       secure: secure ?? await this._questionService.Ask('toggle', 'This connection is secure ?'),
     };
 
-    if (await this._smtpService.CheckAccount(account)) {
-      await this._smtpServerRepository.Save(account);
+    try {
+      await this._mailService.Connect(account);
+      await this._mailServerRepository.Save(account);
       this._loggerService.Information(`Account ${account.user} added.`);
       return true;
+    } catch {
+      this._loggerService.Error(`Unable to connect to ${account.server} server. Invalid credentials or server parameters.`);
+      return false;
     }
-
-    this._loggerService.Error(`Unable to connect to ${account.server} server. Invalid credentials ou Server parameters.`);
-    return false;
   }
 }

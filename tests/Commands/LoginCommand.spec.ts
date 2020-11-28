@@ -4,24 +4,28 @@ import { Mock, It, Times, ExpectedGetPropertyExpression } from 'moq.ts';
 
 import * as prompts from 'prompts';
 import LoginCommand from "../../src/Commands/LoginCommand";
-import { ISMTPServer } from "../../src/Database/Models/SMTPServer";
+import { IMailServer } from "../../src/Database/Models/MailServer";
 import { IQuestionService } from '../../src/Services/Abstractions/IQuestionService';
-import { ISMTPService } from '../../src/Services/Abstractions/ISMTPService';
+import { IMailService } from '../../src/Services/Abstractions/IMailService';
 import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
-import { SMTPServerRepository } from "../../src/Database/SMTPServerRepository";
+import { MailServerRepository } from "../../src/Database/MailServerRepository";
+import { ImapSimple } from "imap-simple";
 
 describe('Commands/LoginCommand', function () {
 
-  let SMTPServerRepositoryMock : Mock<SMTPServerRepository>;
+  let MailServerRepositoryMock : Mock<MailServerRepository>;
   let QuestionServiceMock : Mock<IQuestionService>;
-  let SmtpServiceMock : Mock<ISMTPService>;
+  let MailServiceMock : Mock<IMailService>;
   let LoggerServiceMock : Mock<ILoggerService>;
 
+  let ImapSimpleMock : Mock<ImapSimple>;
+
   beforeEach(() => {
-    SMTPServerRepositoryMock = new Mock<SMTPServerRepository>();
+    MailServerRepositoryMock = new Mock<MailServerRepository>();
     QuestionServiceMock = new Mock<IQuestionService>();
-    SmtpServiceMock = new Mock<ISMTPService>();
+    MailServiceMock = new Mock<IMailService>();
     LoggerServiceMock = new Mock<ILoggerService>();
+    ImapSimpleMock = new Mock<ImapSimple>();
   });
 
   it('Without params', async function () {
@@ -29,11 +33,11 @@ describe('Commands/LoginCommand', function () {
     QuestionServiceMock
       .setup(x => x.Ask(It.IsAny<prompts.PromptType>(), It.IsAny<string>()))
       .returns(<any> false);
-    SmtpServiceMock.setup(x => x.CheckAccount(It.IsAny<ISMTPServer>())).returns(new Promise<boolean>((_) => _(false)));
+    MailServiceMock.setup(x => x.Connect(It.IsAny<IMailServer>())).returns(new Promise((_) => _(<ImapSimple | PromiseLike<ImapSimple>>ImapSimpleMock.object())));
     LoggerServiceMock.setup(x => x.Error).returns(() => {});
 
     // A
-    const command = new LoginCommand(SMTPServerRepositoryMock.object(), QuestionServiceMock.object(), SmtpServiceMock.object(), LoggerServiceMock.object());
+    const command = new LoginCommand(MailServerRepositoryMock.object(), QuestionServiceMock.object(), MailServiceMock.object(), LoggerServiceMock.object());
     const result = await command.Action(<any> {});
 
     // A
@@ -48,11 +52,11 @@ describe('Commands/LoginCommand', function () {
     QuestionServiceMock
       .setup(x => x.Ask(It.IsAny<prompts.PromptType>(), It.IsAny<string>()))
       .returns(<any> false);
-    SmtpServiceMock.setup(x => x.CheckAccount(It.IsAny<ISMTPServer>())).returns(new Promise<boolean>((_) => _(false)));
+    MailServiceMock.setup(x => x.Connect(It.IsAny<IMailServer>())).returns(new Promise((_) => _(<ImapSimple | PromiseLike<ImapSimple>>ImapSimpleMock.object())));
     LoggerServiceMock.setup(x => x.Error).returns(() => {});
 
     // A
-    const command = new LoginCommand(SMTPServerRepositoryMock.object(), QuestionServiceMock.object(), SmtpServiceMock.object(), LoggerServiceMock.object());
+    const command = new LoginCommand(MailServerRepositoryMock.object(), QuestionServiceMock.object(), MailServiceMock.object(), LoggerServiceMock.object());
     const result = await command.Action(<any> {
       port: 21,
       password: 'example'
@@ -67,20 +71,20 @@ describe('Commands/LoginCommand', function () {
 
   it('Invalid account', async function () {
     // A;
-    SMTPServerRepositoryMock.setup(x => x.Save).returns(async () => <ISMTPServer>{})
+    MailServerRepositoryMock.setup(x => x.Save).returns(async () => <IMailServer>{})
     QuestionServiceMock
       .setup(x => x.Ask(It.IsAny<prompts.PromptType>(), It.IsAny<string>()))
       .returns(<any> false);
-    SmtpServiceMock.setup(x => x.CheckAccount(It.IsAny<ISMTPServer>())).returns(new Promise<boolean>((_) => _(false)));
+    MailServiceMock.setup(x => x.Connect(It.IsAny<IMailServer>())).throws('');
     LoggerServiceMock.setup(x => x.Error).returns(() => {});
     LoggerServiceMock.setup(x => x.Information).returns(() => {});
 
     // A
-    const command = new LoginCommand(SMTPServerRepositoryMock.object(), QuestionServiceMock.object(), SmtpServiceMock.object(), LoggerServiceMock.object());
+    const command = new LoginCommand(MailServerRepositoryMock.object(), QuestionServiceMock.object(), MailServiceMock.object(), LoggerServiceMock.object());
     const result = await command.Action(<any> {});
 
     // A
-    SMTPServerRepositoryMock.verify(x => x.Save, Times.Never());
+    MailServerRepositoryMock.verify(x => x.Save, Times.Never());
     LoggerServiceMock.verify(x => x.Error, Times.AtLeastOnce());
     LoggerServiceMock.verify(x => x.Information, Times.Never());
     expect(result).toBeFalsy();
@@ -88,20 +92,20 @@ describe('Commands/LoginCommand', function () {
 
   it('Valid account', async function () {
     // A;
-    SMTPServerRepositoryMock.setup(x => x.Save).returns(async () => <ISMTPServer>{})
+    MailServerRepositoryMock.setup(x => x.Save).returns(async () => <IMailServer>{})
     QuestionServiceMock
       .setup(x => x.Ask(It.IsAny<prompts.PromptType>(), It.IsAny<string>()))
       .returns(<any> false);
-    SmtpServiceMock.setup(x => x.CheckAccount(It.IsAny<ISMTPServer>())).returns(new Promise<boolean>((_) => _(true)));
+    MailServiceMock.setup(x => x.Connect(It.IsAny<IMailServer>())).returns(new Promise((_) => _(<ImapSimple | PromiseLike<ImapSimple>>ImapSimpleMock.object())));
     LoggerServiceMock.setup(x => x.Error).returns(() => {});
     LoggerServiceMock.setup(x => x.Information).returns(() => {});
 
     // A
-    const command = new LoginCommand(SMTPServerRepositoryMock.object(), QuestionServiceMock.object(), SmtpServiceMock.object(), LoggerServiceMock.object());
+    const command = new LoginCommand(MailServerRepositoryMock.object(), QuestionServiceMock.object(), MailServiceMock.object(), LoggerServiceMock.object());
     const result = await command.Action(<any> {});
 
     // A
-    SMTPServerRepositoryMock.verify(x => x.Save, Times.Once());
+    MailServerRepositoryMock.verify(x => x.Save, Times.Once());
     LoggerServiceMock.verify(x => x.Error, Times.Never());
     LoggerServiceMock.verify(x => x.Information, Times.AtLeastOnce());
     expect(result).toBeTruthy();

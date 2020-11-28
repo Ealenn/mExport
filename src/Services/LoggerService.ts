@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import figlet from 'figlet';
 import { injectable, inject } from "tsyringe";
 
+/* istanbul ignore file */
 @injectable()
 export class LoggerService implements ILoggerService {
   private _configuration: IConfiguration;

@@ -1,11 +1,11 @@
 import { inject, injectable } from "tsyringe";
 import ICommand from './Abstractions/ICommand';
-import { SMTPServerRepository } from "../Database/SMTPServerRepository";
+import { MailServerRepository } from "../Database/MailServerRepository";
 import { ILoggerService } from "../Services/Abstractions/ILoggerService";
 
 @injectable()
 export default class DisconnectCommand implements ICommand {
-  private _smtpServerRepository: SMTPServerRepository;
+  private _mailServerRepository: MailServerRepository;
   private _loggerService: ILoggerService;
 
   Command: string;
@@ -13,17 +13,17 @@ export default class DisconnectCommand implements ICommand {
   Options: string[];
 
   constructor(
-    @inject('SMTPServerRepository') smtpServerRepository: SMTPServerRepository,
+    @inject('MailServerRepository') mailServerRepository: MailServerRepository,
     @inject('ILoggerService') loggerService: ILoggerService
   ) {
     this.Command = 'disconnect';
-    this.Description = 'remove SMTP server';
+    this.Description = 'remove Mail server';
     this.Options = new Array<string>(
       '-i, --id [id]',
       '-u, --user [user]'
     );
 
-    this._smtpServerRepository = smtpServerRepository;
+    this._mailServerRepository = mailServerRepository;
     this._loggerService = loggerService;
   }
 
@@ -36,9 +36,9 @@ export default class DisconnectCommand implements ICommand {
     let operation: number;
 
     if (id) {
-      operation = await this._smtpServerRepository.Remove({ id: id });
+      operation = await this._mailServerRepository.Remove({ id: id });
     } else if (user) {
-      operation = await this._smtpServerRepository.Remove({ user: user });
+      operation = await this._mailServerRepository.Remove({ user: user });
     } else {
       this._loggerService.Error('Missing required argument');
       return false;

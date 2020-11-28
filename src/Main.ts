@@ -12,10 +12,9 @@ import Program from './Program'
 import { CommandsService } from "./Services/CommandsService";
 import { LoggerService } from "./Services/LoggerService";
 import { QuestionService } from "./Services/QuestionService";
-import { SMTPService } from "./Services/SMTPService";
-import { SMTPServerRepository } from "./Database/SMTPServerRepository";
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+import { MailService } from "./Services/MailService";
+import { MailServerRepository } from "./Database/MailServerRepository";
+import SynchronizeCommand from "./Commands/SynchronizeCommand";
 
 (async () => {
   const CommanderProgram = new Commander.Command();
@@ -25,16 +24,16 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
    */
   container
     // Repository
-    .register("SMTPServerRepository", { useClass: SMTPServerRepository })
+    .register("MailServerRepository", { useClass: MailServerRepository })
     // Commands
     .register("LoginCommand", { useClass: LoginCommand })
     .register("DisconnectCommand", { useClass: DisconnectCommand })
     .register("StatusCommand", { useClass: StatusCommand })
-    .register("StatusCommand", { useClass: StatusCommand })
+    .register("SynchronizeCommand", { useClass: SynchronizeCommand })
     // Services
     .register("ILoggerService", { useClass: LoggerService })
     .register("ICommandsService", { useClass: CommandsService })
-    .register("ISMTPService", { useClass: SMTPService })
+    .register("IMailService", { useClass: MailService })
     .register("IQuestionService", { useClass: QuestionService })
     // Factory
     .register("ISequelizeFactory", { useClass: SequelizeFactory })

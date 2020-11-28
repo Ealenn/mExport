@@ -11,8 +11,8 @@ export class Configuration implements IConfiguration {
   constructor() {
     this.Name = 'mExport';
     this.Version = 'SANDBOX';
-    this.DatabasePath = Path.join(__dirname, `${this.Name}.db`);
     this.Debug = false;
+    this.DatabasePath = Path.join(__dirname, `${this.Name}.${this.Version}.db`);
   }
 }
 
