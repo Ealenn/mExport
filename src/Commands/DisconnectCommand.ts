@@ -1,10 +1,11 @@
-import { inject, injectable } from "tsyringe";
+import { inject, injectable } from 'tsyringe';
 import ICommand from './Abstractions/ICommand';
-import { ILoggerService } from "../Services/Abstractions/ILoggerService";
-import { IMailServerRepository } from "../Database/IMailServerRepository";
+import { ILoggerService } from '../Services/Abstractions/ILoggerService';
+import { IMailServerRepository } from '../Database/IMailServerRepository';
 
 @injectable()
-export default class DisconnectCommand implements ICommand {
+export default class DisconnectCommand implements ICommand
+{
   private _mailServerRepository: IMailServerRepository;
   private _loggerService: ILoggerService;
 
@@ -15,7 +16,8 @@ export default class DisconnectCommand implements ICommand {
   constructor(
     @inject('IMailServerRepository') mailServerRepository: IMailServerRepository,
     @inject('ILoggerService') loggerService: ILoggerService
-  ) {
+  )
+  {
     this.Command = 'disconnect';
     this.Description = 'remove Mail server';
     this.Options = new Array<string>(
@@ -27,25 +29,33 @@ export default class DisconnectCommand implements ICommand {
     this._loggerService = loggerService;
   }
 
-  public async ActionAsync(request: any): Promise<boolean> {
+  public async ActionAsync(request: any): Promise<boolean>
+  {
     const {
       id,
       user
     } = request;
 
-    if (id) {
+    if (id)
+    {
       const server = await this._mailServerRepository.FindAsync({ id: id });
-      if (server) {
+      if (server)
+      {
         await this._mailServerRepository.RemoveAsync(server);
         this._loggerService.Information(`${server.user} account(s) disconnected`);
       }
-    } else if (user) {
+    }
+    else if (user)
+    {
       const server = await this._mailServerRepository.FindAsync({ user });
-      if (server) {
+      if (server)
+      {
         await this._mailServerRepository.RemoveAsync(server);
         this._loggerService.Information(`${server.user} account(s) disconnected`);
       }
-    } else {
+    }
+    else
+    {
       this._loggerService.Error('Missing required argument');
       return false;
     }

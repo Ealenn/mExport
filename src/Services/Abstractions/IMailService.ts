@@ -1,6 +1,6 @@
-import { ImapSimple, Message } from "imap-simple";
-import { Email } from "../../Database/Models/Email";
-import { MailServer } from "../../Database/Models/MailServer";
+import { ImapSimple, Message } from 'imap-simple';
+import { Email } from '../../Database/Models/Email';
+import { MailServer } from '../../Database/Models/MailServer';
 
 export interface IMailService {
   DownloadAsync(server: ImapSimple, skip: number, take: number): Promise<Message[]>;

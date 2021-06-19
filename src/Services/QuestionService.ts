@@ -1,9 +1,11 @@
 import { PromptObject, PromptType, PrevCaller, prompt } from 'prompts';
-import { IQuestionService } from "./Abstractions/IQuestionService";
+import { IQuestionService } from './Abstractions/IQuestionService';
 
 /* istanbul ignore file */
-export class QuestionService implements IQuestionService {
-  public async AskAsync(type: PromptType, message: string, validate?: PrevCaller<any, boolean | string | Promise<boolean | string>>): Promise<any> {
+export class QuestionService implements IQuestionService
+{
+  public async AskAsync(type: PromptType, message: string, validate?: PrevCaller<any, boolean | string | Promise<boolean | string>>): Promise<any>
+  {
     return await this.getValueOf({
       type: type,
       name: 'value',
@@ -14,7 +16,8 @@ export class QuestionService implements IQuestionService {
     });
   }
 
-  private async getValueOf(question: PromptObject<"value">): Promise<any> {
+  private async getValueOf(question: PromptObject<'value'>): Promise<any>
+  {
     const result = await prompt(question);
     return result.value;
   }

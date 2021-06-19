@@ -1,15 +1,16 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import { Mock, It, Times } from 'moq.ts';
 import * as prompts from 'prompts';
-import LoginCommand from "../../src/Commands/LoginCommand";
-import { MailServer } from "../../src/Database/Models/MailServer";
+import LoginCommand from '../../src/Commands/LoginCommand';
+import { MailServer } from '../../src/Database/Models/MailServer';
 import { IQuestionService } from '../../src/Services/Abstractions/IQuestionService';
 import { IMailService } from '../../src/Services/Abstractions/IMailService';
 import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
-import { IMailServerRepository } from "../../src/Database/IMailServerRepository";
-import { ImapSimple } from "imap-simple";
+import { IMailServerRepository } from '../../src/Database/IMailServerRepository';
+import { ImapSimple } from 'imap-simple';
 
-describe('Commands/LoginCommand', function () {
+describe('Commands/LoginCommand', function()
+{
 
   let MailServerRepositoryMock : Mock<IMailServerRepository>;
   let QuestionServiceMock : Mock<IQuestionService>;
@@ -18,7 +19,8 @@ describe('Commands/LoginCommand', function () {
 
   let ImapSimpleMock : Mock<ImapSimple>;
 
-  beforeEach(() => {
+  beforeEach(() =>
+  {
     MailServerRepositoryMock = new Mock<IMailServerRepository>();
     QuestionServiceMock = new Mock<IQuestionService>();
     MailServiceMock = new Mock<IMailService>();
@@ -30,7 +32,8 @@ describe('Commands/LoginCommand', function () {
     LoggerServiceMock.setup(x => x.Information).returns(() => {});
   });
 
-  it('Without params', async function () {
+  it('Without params', async function()
+  {
     // A
     QuestionServiceMock
       .setup(x => x.AskAsync(It.IsAny<prompts.PromptType>(), It.IsAny<string>()))
@@ -48,7 +51,8 @@ describe('Commands/LoginCommand', function () {
     QuestionServiceMock.verify(x => x.AskAsync('toggle', It.IsAny<string>()), Times.Once());
   });
 
-  it('With params', async function () {
+  it('With params', async function()
+  {
     // A
     QuestionServiceMock
       .setup(x => x.AskAsync(It.IsAny<prompts.PromptType>(), It.IsAny<string>()))
@@ -69,9 +73,10 @@ describe('Commands/LoginCommand', function () {
     QuestionServiceMock.verify(x => x.AskAsync('toggle', It.IsAny<string>()), Times.Once());
   });
 
-  it('Invalid account', async function () {
+  it('Invalid account', async function()
+  {
     // A
-    MailServerRepositoryMock.setup(x => x.SaveAsync).returns(async () => <MailServer>{});
+    MailServerRepositoryMock.setup(x => x.SaveAsync).returns(async() => <MailServer>{});
     QuestionServiceMock
       .setup(x => x.AskAsync(It.IsAny<prompts.PromptType>(), It.IsAny<string>()))
       .returns(<any> false);
@@ -88,9 +93,10 @@ describe('Commands/LoginCommand', function () {
     expect(result).toBeFalsy();
   });
 
-  it('Valid account', async function () {
+  it('Valid account', async function()
+  {
     // A
-    MailServerRepositoryMock.setup(x => x.SaveAsync).returns(async () => <MailServer>{});
+    MailServerRepositoryMock.setup(x => x.SaveAsync).returns(async() => <MailServer>{});
     QuestionServiceMock
       .setup(x => x.AskAsync(It.IsAny<prompts.PromptType>(), It.IsAny<string>()))
       .returns(<any> false);

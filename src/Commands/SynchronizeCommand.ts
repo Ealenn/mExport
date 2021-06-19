@@ -1,12 +1,13 @@
-import { inject, injectable } from "tsyringe";
+import { inject, injectable } from 'tsyringe';
 import ICommand from './Abstractions/ICommand';
-import { IMailService } from "../Services/Abstractions/IMailService";
-import { IMailServerRepository } from "../Database/IMailServerRepository";
-import { ILoggerService } from "../Services/Abstractions/ILoggerService";
-import { ImapSimple } from "imap-simple";
+import { IMailService } from '../Services/Abstractions/IMailService';
+import { IMailServerRepository } from '../Database/IMailServerRepository';
+import { ILoggerService } from '../Services/Abstractions/ILoggerService';
+import { ImapSimple } from 'imap-simple';
 
 @injectable()
-export default class SynchronizeCommand implements ICommand {
+export default class SynchronizeCommand implements ICommand
+{
   private _batchSize = 10;
   private _mailService: IMailService;
   private _mailServerRepository: IMailServerRepository;
@@ -20,7 +21,8 @@ export default class SynchronizeCommand implements ICommand {
     @inject('IMailService') mailService: IMailService,
     @inject('IMailServerRepository') mailServerRepository: IMailServerRepository,
     @inject('ILoggerService') loggerService: ILoggerService
-  ) {
+  )
+  {
     this.Command = 'synchronize';
     this.Description = 'download all emails from Mail servers';
     this.Options = new Array<string>(
@@ -32,33 +34,40 @@ export default class SynchronizeCommand implements ICommand {
     this._loggerService = loggerService;
   }
 
-  public async ActionAsync(request: any): Promise<boolean> {
+  public async ActionAsync(request: any): Promise<boolean>
+  {
     const { batch } = request;
-    if (batch != undefined && batch >= 1 && batch <= 200) {
+    if (batch != undefined && batch >= 1 && batch <= 200)
+    {
       this._batchSize = Number(batch);
     }
-    
+
     const servers = await this._mailServerRepository.FindAllAsync();
-    if (servers.length == 0) {
+    if (servers.length == 0)
+    {
       this._loggerService.Error('No Mail server configured');
       return false;
     }
 
-    for (let indexServer = 0; indexServer < servers.length; indexServer++) {
+    for (let indexServer = 0; indexServer < servers.length; indexServer++)
+    {
       const server = servers[indexServer];
       let imap : ImapSimple;
 
       // Connect
       this._loggerService.Information(`Connect to ${server.server} for ${server.user}...`);
-      try {
+      try
+      {
         imap = await this._mailService.ConnectAsync(server);
-      } catch {
+      }
+      catch
+      {
         this._loggerService.Error(`Unable to connect to ${server.server}. Invalid credentials or server parameters.`);
         continue;
       }
 
       // Purge
-      this._loggerService.Information(`[In Progress] Purge local old data...`);
+      this._loggerService.Information('[In Progress] Purge local old data...');
       const deletedEmails = await this._mailServerRepository.PurgeEmailsAsync(server);
       this._loggerService.Information(`[OK] ${deletedEmails} email(s) removed from local storage !`);
 
@@ -69,16 +78,18 @@ export default class SynchronizeCommand implements ICommand {
 
       // Download
       this._loggerService.Information(`[Download] Counting emails for ${server.user} in ${server.server}`);
-      
+
       let downloaded = 0;
-      while(downloaded < count)
+      while (downloaded < count)
       {
         const toDownload = (count - downloaded) < this._batchSize ? (count - downloaded) : this._batchSize;
         const mails = await this._mailService.DownloadAsync(imap, downloaded, toDownload);
 
-        for (let indexMails = 0; indexMails < mails.length; indexMails++){
+        for (let indexMails = 0; indexMails < mails.length; indexMails++)
+        {
           const email = await this._mailService.GetEmailAsync(mails[indexMails], server);
-          if (email != null){
+          if (email != null)
+          {
             await this._mailServerRepository.SaveEmailAsync(email);
           }
         }
@@ -88,7 +99,7 @@ export default class SynchronizeCommand implements ICommand {
       }
     }
 
-    this._loggerService.Information(`Synchronization completed !`);
+    this._loggerService.Information('Synchronization completed !');
     return true;
   }
 }

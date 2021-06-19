@@ -1,14 +1,16 @@
-import { singleton } from "tsyringe";
+import { singleton } from 'tsyringe';
 import Path from 'path';
 
 @singleton()
-export class Configuration implements IConfiguration {
+export class Configuration implements IConfiguration
+{
   public Name: string;
   public Version: string;
   public DatabasePath: string;
   public Debug: boolean;
 
-  constructor() {
+  constructor()
+  {
     this.Name = 'mExport';
     this.Version = 'SANDBOX';
     this.Debug = false;
