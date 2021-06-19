@@ -1,16 +1,18 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import { Mock, Times } from 'moq.ts';
-import DisconnectCommand from "../../src/Commands/DisconnectCommand";
+import DisconnectCommand from '../../src/Commands/DisconnectCommand';
 import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
-import { IMailServerRepository } from "../../src/Database/IMailServerRepository";
-import { MailServer } from "../../src/Database/Models/MailServer";
+import { IMailServerRepository } from '../../src/Database/IMailServerRepository';
+import { MailServer } from '../../src/Database/Models/MailServer';
 
-describe('Commands/DisconnectCommand', function () {
+describe('Commands/DisconnectCommand', function()
+{
 
   let MailServerRepositoryMock: Mock<IMailServerRepository>;
   let LoggerServiceMock: Mock<ILoggerService>;
 
-  beforeEach(() => {
+  beforeEach(() =>
+  {
     MailServerRepositoryMock = new Mock<IMailServerRepository>();
     LoggerServiceMock = new Mock<ILoggerService>();
 
@@ -18,15 +20,16 @@ describe('Commands/DisconnectCommand', function () {
     LoggerServiceMock.setup(x => x.Information).returns(() => {});
   });
 
-  it('With ID', async function () {
+  it('With ID', async function()
+  {
     // A
-    MailServerRepositoryMock.setup(x => x.RemoveAsync).returns(async () => {});
-    MailServerRepositoryMock.setup(x => x.FindAsync).returns(async () => new MailServer());
+    MailServerRepositoryMock.setup(x => x.RemoveAsync).returns(async() => {});
+    MailServerRepositoryMock.setup(x => x.FindAsync).returns(async() => new MailServer());
 
     // A
     const command = new DisconnectCommand(MailServerRepositoryMock.object(), LoggerServiceMock.object());
     const result = await command.ActionAsync(<any> {
-        id: 1
+      id: 1
     });
 
     // A
@@ -36,15 +39,16 @@ describe('Commands/DisconnectCommand', function () {
     expect(result).toBeTruthy();
   });
 
-  it('With User', async function () {
+  it('With User', async function()
+  {
     // A
-    MailServerRepositoryMock.setup(x => x.FindAsync).returns(async () => new MailServer());
-    MailServerRepositoryMock.setup(x => x.RemoveAsync).returns(async () => {});
+    MailServerRepositoryMock.setup(x => x.FindAsync).returns(async() => new MailServer());
+    MailServerRepositoryMock.setup(x => x.RemoveAsync).returns(async() => {});
 
     // A
     const command = new DisconnectCommand(MailServerRepositoryMock.object(), LoggerServiceMock.object());
     const result = await command.ActionAsync(<any> {
-        user: 'example@example.com'
+      user: 'example@example.com'
     });
 
     // A
@@ -54,7 +58,8 @@ describe('Commands/DisconnectCommand', function () {
     expect(result).toBeTruthy();
   });
 
-  it('Without options', async function () {
+  it('Without options', async function()
+  {
     // A
 
     // A

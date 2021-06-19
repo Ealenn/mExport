@@ -1,20 +1,22 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import { Mock, It, Times } from 'moq.ts';
-import SynchronizeCommand from "../../src/Commands/SynchronizeCommand";
-import { MailServer } from "../../src/Database/Models/MailServer";
+import SynchronizeCommand from '../../src/Commands/SynchronizeCommand';
+import { MailServer } from '../../src/Database/Models/MailServer';
 import { IMailService } from '../../src/Services/Abstractions/IMailService';
 import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
-import { IMailServerRepository } from "../../src/Database/IMailServerRepository";
-import { ImapSimple, Message } from "imap-simple";
-import { Email } from "../../src/Database/Models/Email";
+import { IMailServerRepository } from '../../src/Database/IMailServerRepository';
+import { ImapSimple, Message } from 'imap-simple';
+import { Email } from '../../src/Database/Models/Email';
 
-describe('Commands/SynchronizeCommand', function () {
+describe('Commands/SynchronizeCommand', function()
+{
 
   let MailServiceMock: Mock<IMailService>;
   let MailServerRepositoryMock: Mock<IMailServerRepository>;
   let LoggerServiceMock: Mock<ILoggerService>;
 
-  beforeEach(() => {
+  beforeEach(() =>
+  {
     MailServiceMock = new Mock<IMailService>();
     MailServerRepositoryMock = new Mock<IMailServerRepository>();
     LoggerServiceMock = new Mock<ILoggerService>();
@@ -23,9 +25,10 @@ describe('Commands/SynchronizeCommand', function () {
     LoggerServiceMock.setup(x => x.Information).returns(() => {});
   });
 
-  it('No server', async function () {
+  it('No server', async function()
+  {
     // A
-    MailServerRepositoryMock.setup(x => x.FindAllAsync).returns(async () => new Array<MailServer>());
+    MailServerRepositoryMock.setup(x => x.FindAllAsync).returns(async() => new Array<MailServer>());
 
     // A
     const command = new SynchronizeCommand(MailServiceMock.object(), MailServerRepositoryMock.object(), LoggerServiceMock.object());
@@ -36,7 +39,8 @@ describe('Commands/SynchronizeCommand', function () {
     expect(result).toBeFalsy();
   });
 
-  it('Invalid Server, but continue', async function () {
+  it('Invalid Server, but continue', async function()
+  {
     // A
     const ServerExample = <MailServer>{
       id: 1,
@@ -46,7 +50,7 @@ describe('Commands/SynchronizeCommand', function () {
       port: 21,
       secure: false
     };
-    MailServerRepositoryMock.setup(x => x.FindAllAsync).returns(async () => new Array<MailServer>(ServerExample));
+    MailServerRepositoryMock.setup(x => x.FindAllAsync).returns(async() => new Array<MailServer>(ServerExample));
     MailServiceMock.setup(x => x.ConnectAsync(It.IsAny<MailServer>())).throws('');
 
     // A
@@ -58,7 +62,8 @@ describe('Commands/SynchronizeCommand', function () {
     expect(result).toBeTruthy();
   });
 
-  it('Valid server with batch', async function () {
+  it('Valid server with batch', async function()
+  {
     // A
     const ImapMock = new Mock<ImapSimple>();
     const ServerExample = new MailServer();
@@ -69,7 +74,7 @@ describe('Commands/SynchronizeCommand', function () {
     ServerExample.port = 21;
     ServerExample.secure = false;
 
-    MailServerRepositoryMock.setup(x => x.FindAllAsync).returns(async () => new Array<MailServer>(ServerExample));
+    MailServerRepositoryMock.setup(x => x.FindAllAsync).returns(async() => new Array<MailServer>(ServerExample));
     MailServiceMock.setup(x => x.ConnectAsync(ServerExample)).returns(new Promise(_ => _(ImapMock.object())));
     MailServerRepositoryMock.setup(x => x.PurgeEmailsAsync(ServerExample)).returns(new Promise(_ => _(42)));
     MailServiceMock.setup(x => x.CountAsync(It.IsAny<ImapSimple>())).returns(new Promise<number>(_ => _(3)));

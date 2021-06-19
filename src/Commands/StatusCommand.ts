@@ -1,11 +1,12 @@
-import { inject, injectable } from "tsyringe";
+import { inject, injectable } from 'tsyringe';
 import ICommand from './Abstractions/ICommand';
-import { IMailService } from "../Services/Abstractions/IMailService";
-import { IMailServerRepository } from "../Database/IMailServerRepository";
-import { ILoggerService } from "../Services/Abstractions/ILoggerService";
+import { IMailService } from '../Services/Abstractions/IMailService';
+import { IMailServerRepository } from '../Database/IMailServerRepository';
+import { ILoggerService } from '../Services/Abstractions/ILoggerService';
 
 @injectable()
-export default class StatusCommand implements ICommand {
+export default class StatusCommand implements ICommand
+{
   private _mailService: IMailService;
   private _mailServerRepository: IMailServerRepository;
   private _loggerService: ILoggerService;
@@ -18,7 +19,8 @@ export default class StatusCommand implements ICommand {
     @inject('IMailService') mailService: IMailService,
     @inject('IMailServerRepository') mailServerRepository: IMailServerRepository,
     @inject('ILoggerService') loggerService: ILoggerService
-  ) {
+  )
+  {
     this.Command = 'status';
     this.Description = 'view status of Mail servers';
     this.Options = new Array<string>();
@@ -28,21 +30,27 @@ export default class StatusCommand implements ICommand {
     this._loggerService = loggerService;
   }
 
-  public async ActionAsync(): Promise<boolean> {
+  public async ActionAsync(): Promise<boolean>
+  {
     const results = await this._mailServerRepository.FindAllAsync();
 
-    if (results.length == 0) {
+    if (results.length == 0)
+    {
       this._loggerService.Error('No Mail server configured');
       return false;
     }
 
-    for (let indexServer = 0; indexServer < results.length; indexServer++) {
+    for (let indexServer = 0; indexServer < results.length; indexServer++)
+    {
       const server = results[indexServer];
       let status : string;
-      try {
+      try
+      {
         await this._mailService.ConnectAsync(server);
         status = 'OK';
-      } catch {
+      }
+      catch
+      {
         status = 'FAIL';
       }
       this._loggerService.Information(`- ${server.id} | [${status}] ${server.user}`);
