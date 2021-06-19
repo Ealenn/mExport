@@ -6,15 +6,15 @@ import { container } from "tsyringe";
 import DisconnectCommand from "./Commands/DisconnectCommand";
 import LoginCommand from "./Commands/LoginCommand";
 import StatusCommand from "./Commands/StatusCommand";
-import { Configuration, IConfiguration } from "./Configuration";
-import { SequelizeFactory } from "./Factory/SequelizeFactory";
-import Program from './Program'
+import { Configuration } from "./Configuration";
+import Program from './Program';
 import { CommandsService } from "./Services/CommandsService";
 import { LoggerService } from "./Services/LoggerService";
 import { QuestionService } from "./Services/QuestionService";
 import { MailService } from "./Services/MailService";
 import { MailServerRepository } from "./Database/MailServerRepository";
 import SynchronizeCommand from "./Commands/SynchronizeCommand";
+import { ExitService } from "./Services/ExitService";
 
 (async () => {
   const CommanderProgram = new Commander.Command();
@@ -24,7 +24,7 @@ import SynchronizeCommand from "./Commands/SynchronizeCommand";
    */
   container
     // Repository
-    .register("MailServerRepository", { useClass: MailServerRepository })
+    .register("IMailServerRepository", { useClass: MailServerRepository })
     // Commands
     .register("LoginCommand", { useClass: LoginCommand })
     .register("DisconnectCommand", { useClass: DisconnectCommand })
@@ -35,16 +35,13 @@ import SynchronizeCommand from "./Commands/SynchronizeCommand";
     .register("ICommandsService", { useClass: CommandsService })
     .register("IMailService", { useClass: MailService })
     .register("IQuestionService", { useClass: QuestionService })
-    // Factory
-    .register("ISequelizeFactory", { useClass: SequelizeFactory })
+    .register("IExitService", { useClass: ExitService })
     // Configuration
     .register("IConfiguration", { useClass: Configuration });
 
   /**
    * Main Program
    */
-  let program = container.resolve(Program);
-  await program.Sequelize();
-  await program.Landing();
-  await program.Commander(CommanderProgram);
+  const program = container.resolve(Program);
+  await program.Run(CommanderProgram);
 })();

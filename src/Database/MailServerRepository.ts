@@ -1,11 +1,16 @@
-import { IMailServer, MailServer } from "./Models/MailServer";
-import { Email, IEmail } from "./Models/Email"
+import { MailServer } from "./Models/MailServer";
+import { Email } from "./Models/Email";
 import { ILoggerService } from "../Services/Abstractions/ILoggerService";
-import { inject, injectable } from "tsyringe";
+import { inject, singleton } from "tsyringe";
+import { Connection, createConnection, EntityManager } from "typeorm";
+import { getManager } from "typeorm";
+import { IMailServerRepository } from "./IMailServerRepository";
 
 /* istanbul ignore file */
-@injectable()
-export class MailServerRepository {
+@singleton()
+export class MailServerRepository implements IMailServerRepository {
+  static _connection: Connection;
+  static _manager: EntityManager;
   private _loggerService: ILoggerService;
 
   constructor(
@@ -15,52 +20,45 @@ export class MailServerRepository {
     this._loggerService = loggerService;
   }
 
-  public async Save(mailServer: IMailServer): Promise<IMailServer> {
-    return await MailServer.create(mailServer);
+  public async ConnectAsync(database: string, logging: boolean): Promise<void> {
+    MailServerRepository._connection = await createConnection({
+      type: "sqlite",
+      database: database,
+      synchronize: true,
+      entities: [
+        __dirname + "/Models/*.js"
+      ],
+      logging: logging ? "all" : undefined
+    });
+    MailServerRepository._manager = getManager();
   }
 
-  public async Find(filter: any): Promise<IMailServer|null> {
-    return await MailServer.findOne({
+  public async SaveAsync(mailServer: MailServer): Promise<MailServer> {
+    return MailServerRepository._manager.save(mailServer);
+  }
+
+  public async FindAsync(filter: any): Promise<MailServer|undefined> {
+    return MailServerRepository._connection.getRepository(MailServer).findOne({
       where: filter
     });
   }
 
-  public async FindAll(): Promise<IMailServer[]> {
-    return await MailServer.findAll();
+  public async FindAllAsync(): Promise<Array<MailServer>> {
+    return MailServerRepository._connection.getRepository(MailServer).find();
   }
 
-  public async Remove(filter: any): Promise<number> {
-    const server = await this.Find(filter);
-    if (server == null)
-    {
-      return 0;
-    }
+  public async RemoveAsync(mailServer: MailServer): Promise<void> {
+    await MailServerRepository._connection.getRepository(MailServer).delete(mailServer);
+  }
 
-    await this.PurgeEmails(server);
-    return await MailServer.destroy({
-      where: filter
+  public SaveEmailAsync(email : Email): Promise<Email> {
+    return MailServerRepository._manager.save(email);
+  }
+
+  public async PurgeEmailsAsync(mailServer: MailServer): Promise<number> {
+    const result = await MailServerRepository._manager.delete(Email, {
+      server: mailServer
     });
-  }
-
-  public async SaveEmail(email : IEmail): Promise<boolean> {
-    try {
-      Email.create(email);
-    } catch(exception) {
-      this._loggerService.Debug(exception);
-      return false;
-    }
-    return true;
-  }
-
-  public async PurgeEmails(mailServer: IMailServer): Promise<number> {
-    try {
-      return await Email.destroy({
-        where: {
-          serverId: mailServer.id
-        }
-      })
-    } catch {
-      return 0;
-    }
+    return result.affected || 0;
   }
 }

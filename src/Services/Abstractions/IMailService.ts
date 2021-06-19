@@ -1,10 +1,10 @@
 import { ImapSimple, Message } from "imap-simple";
-import { IEmail } from "../../Database/Models/Email";
-import { IMailServer } from "../../Database/Models/MailServer";
+import { Email } from "../../Database/Models/Email";
+import { MailServer } from "../../Database/Models/MailServer";
 
 export interface IMailService {
-  Download(server: ImapSimple, skip: number, take: number): Promise<Message[]>;
-  Count(server: ImapSimple): Promise<number>;
-  GetEmail(message: Message, serverId: number): Promise<IEmail | null>;
-  Connect(server: IMailServer): Promise<ImapSimple>;
+  DownloadAsync(server: ImapSimple, skip: number, take: number): Promise<Message[]>;
+  CountAsync(server: ImapSimple): Promise<number>;
+  GetEmailAsync(message: Message, server: MailServer): Promise<Email | null>;
+  ConnectAsync(server: MailServer): Promise<ImapSimple>;
 }

@@ -1,61 +1,21 @@
-import { Sequelize, Model, DataTypes, BuildOptions } from "sequelize";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Email } from "./Email";
 
-export interface IMailServer {
-  id: number;
-  user: string;
-  password: string;
-  server: string;
-  port: number;
-  secure: boolean;
-}
+@Entity()
+export class MailServer {
 
-export class MailServer extends Model implements IMailServer {
-  public id: number;
-  public user: string;
-  public password: string;
-  public server: string;
-  public port: number;
-  public secure: boolean;
-}
-
-/* istanbul ignore next */
-export const initializeModel = async (database: Sequelize) => {
-  MailServer.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      user: {
-        type: new DataTypes.STRING(256),
-        allowNull: false,
-      },
-      password: {
-        type: new DataTypes.STRING(256),
-        allowNull: false,
-      },
-      server: {
-        type: new DataTypes.STRING(256),
-        allowNull: false,
-      },
-      port: {
-        type: new DataTypes.INTEGER,
-        allowNull: false,
-      },
-      secure: {
-        type: new DataTypes.TINYINT,
-        allowNull: false,
-        defaultValue: true
-      }
-    },
-    {
-      tableName: "mail_servers",
-      sequelize: database,
-      charset: 'utf8',
-      collate: 'utf8_general_ci'
-    }
-  );
-
-  await MailServer.sync({ force: false });
+    @PrimaryGeneratedColumn()
+    public id?: number;
+    @Column()
+    public user: string;
+    @Column()
+    public password: string;
+    @Column()
+    public server: string;
+    @Column()
+    public port: number;
+    @Column()
+    public secure: boolean;
+    @OneToMany(() => Email, email => email.server)
+    emails: Email[];
 }
