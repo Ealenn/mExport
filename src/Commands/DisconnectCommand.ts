@@ -1,11 +1,11 @@
 import { inject, injectable } from "tsyringe";
 import ICommand from './Abstractions/ICommand';
-import { MailServerRepository } from "../Database/MailServerRepository";
 import { ILoggerService } from "../Services/Abstractions/ILoggerService";
+import { IMailServerRepository } from "../Database/IMailServerRepository";
 
 @injectable()
 export default class DisconnectCommand implements ICommand {
-  private _mailServerRepository: MailServerRepository;
+  private _mailServerRepository: IMailServerRepository;
   private _loggerService: ILoggerService;
 
   Command: string;
@@ -13,7 +13,7 @@ export default class DisconnectCommand implements ICommand {
   Options: string[];
 
   constructor(
-    @inject('MailServerRepository') mailServerRepository: MailServerRepository,
+    @inject('IMailServerRepository') mailServerRepository: IMailServerRepository,
     @inject('ILoggerService') loggerService: ILoggerService
   ) {
     this.Command = 'disconnect';
@@ -27,24 +27,29 @@ export default class DisconnectCommand implements ICommand {
     this._loggerService = loggerService;
   }
 
-  public async Action(request: any): Promise<Boolean> {
+  public async ActionAsync(request: any): Promise<boolean> {
     const {
       id,
       user
     } = request;
 
-    let operation: number;
-
     if (id) {
-      operation = await this._mailServerRepository.Remove({ id: id });
+      const server = await this._mailServerRepository.FindAsync({ id: id });
+      if (server) {
+        await this._mailServerRepository.RemoveAsync(server);
+        this._loggerService.Information(`${server.user} account(s) disconnected`);
+      }
     } else if (user) {
-      operation = await this._mailServerRepository.Remove({ user: user });
+      const server = await this._mailServerRepository.FindAsync({ user });
+      if (server) {
+        await this._mailServerRepository.RemoveAsync(server);
+        this._loggerService.Information(`${server.user} account(s) disconnected`);
+      }
     } else {
       this._loggerService.Error('Missing required argument');
       return false;
     }
 
-    this._loggerService.Information(`${operation} account(s) disconnected`);
     return true;
   }
 }

@@ -15,9 +15,9 @@ export class LoggerService implements ILoggerService {
     this._configuration = configuration;
   }
 
-  Ascii(text: any): void {
+  Ascii(write: any): void {
     console.log(
-      chalk.green(figlet.textSync(text))
+      chalk.green(figlet.textSync(write))
     );
     chalk.reset();
   }

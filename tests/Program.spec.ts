@@ -1,62 +1,111 @@
-import "reflect-metadata"
-
-import { Mock, It, Times, ExpectedGetPropertyExpression } from 'moq.ts';
-
+import "reflect-metadata";
+import { Mock, It, Times } from 'moq.ts';
 import * as Commander from 'commander';
 import { IConfiguration } from "../src/Configuration";
 import Program from "../src/Program";
-import { ISequelizeFactory } from "../src/Factory/Abstractions/ISequelizeFactory";
 import { ICommandsService } from "../src/Services/Abstractions/ICommandsService";
 import { ILoggerService } from "../src/Services/Abstractions/ILoggerService";
 import ICommand from "../src/Commands/Abstractions/ICommand";
+import { IMailServerRepository } from "../src/Database/IMailServerRepository";
+import { IExitService } from "../src/Services/Abstractions/IExitService";
+
+class TestProgram extends Program {
+  public LandingStatus = false;
+  public DatabaseStatus = false;
+  public CommanderStatus = false;
+
+  protected override async Landing(): Promise<Program> {
+    this.LandingStatus = true;
+    return this;
+  }
+  protected override async Database(): Promise<Program> {
+    this.DatabaseStatus = true;
+    return this;
+  }
+  protected override async Commander(): Promise<Program> {
+    this.CommanderStatus = true;
+    return this;
+  }
+}
 
 describe('Program', function () {
+  let ExitServiceMock : Mock<IExitService>;
   let ConfigurationMock : Mock<IConfiguration>;
-  let SequelizeFactoryMock : Mock<ISequelizeFactory>;
   let CommandsServiceMock : Mock<ICommandsService>;
+  let MailServerRepositoryMock : Mock<IMailServerRepository>;
   let LoggerServiceMock : Mock<ILoggerService>;
 
   beforeEach(() => {
+    ExitServiceMock = new Mock<IExitService>();
     ConfigurationMock = new Mock<IConfiguration>();
-    SequelizeFactoryMock = new Mock<ISequelizeFactory>();
     CommandsServiceMock = new Mock<ICommandsService>();
     LoggerServiceMock = new Mock<ILoggerService>();
+    MailServerRepositoryMock = new Mock<IMailServerRepository>();
+  });
+
+  it('Run', async function () {
+    // A
+    const CommandMock = new Mock<Commander.Command>();
+
+    // A
+    const program = new TestProgram(
+      ExitServiceMock.object(),
+      ConfigurationMock.object(),
+      CommandsServiceMock.object(),
+      MailServerRepositoryMock.object(),
+      LoggerServiceMock.object()
+    );
+    await program.Run(CommandMock.object());
+
+    // A
+    expect(program.LandingStatus).toBeTruthy();
+    expect(program.DatabaseStatus).toBeTruthy();
+    expect(program.CommanderStatus).toBeTruthy();
+  });
+
+  it('Database', async function () {
+    // A
+    MailServerRepositoryMock
+      .setup(x => x.ConnectAsync(It.IsAny<string>(), It.IsAny<boolean>()))
+      .returns(new Promise<void>(_ => _()));
+    ConfigurationMock.setup(x => x.DatabasePath).returns("pathTest");
+    ConfigurationMock.setup(x => x.Debug).returns(true);
+
+    // A
+    const program = new Program(
+      ExitServiceMock.object(),
+      ConfigurationMock.object(),
+      CommandsServiceMock.object(),
+      MailServerRepositoryMock.object(),
+      LoggerServiceMock.object()
+    );
+    const result = await program['Database']();
+
+    // A
+    MailServerRepositoryMock.verify(x => x.ConnectAsync("pathTest", true), Times.Once());
+    expect(result).toBe(program);
   });
 
   it('Landing', async function () {
-    // A;
+    // A
     LoggerServiceMock.setup(x => x.Ascii(It.IsAny<any>())).returns();
     LoggerServiceMock.setup(x => x.Information(It.IsAny<any>())).returns();
     ConfigurationMock.setup(x => x.Name).returns("TesT");
     ConfigurationMock.setup(x => x.Version).returns("1.42.12");
 
     // A
-    let program = new Program(
-      SequelizeFactoryMock.object(),
+    const program = new Program(
+      ExitServiceMock.object(),
       ConfigurationMock.object(),
       CommandsServiceMock.object(),
-      LoggerServiceMock.object());
-    await program.Landing();
+      MailServerRepositoryMock.object(),
+      LoggerServiceMock.object()
+    );
+    await program['Landing']();
 
     // A
     LoggerServiceMock.verify(x => x.Ascii("TesT"), Times.Once());
     LoggerServiceMock.verify(x => x.Information("Version: 1.42.12"), Times.Once());
-  });
-
-  it('Sequelize', async function () {
-    // A
-    SequelizeFactoryMock.setup(x => x.Init).returns(async () => true);
-
-    // A
-    let program = new Program(
-      SequelizeFactoryMock.object(),
-      ConfigurationMock.object(),
-      CommandsServiceMock.object(),
-      LoggerServiceMock.object());
-    await program.Sequelize();
-
-    // A
-    SequelizeFactoryMock.verify(x => x.Init, Times.Once());
   });
 
   it('Commander', async function () {
@@ -82,7 +131,7 @@ describe('Program', function () {
       const result = Array<ICommand>();
       for (let indexMock = 0; indexMock < CommandsMock.length; indexMock++)
       {
-        CommandsMock[indexMock].setup(x => x.Action).returns(async () => { return true });
+        CommandsMock[indexMock].setup(x => x.ActionAsync).returns(async () => { return true; });
         CommandsMock[indexMock].setup(x => x.Command).returns('test');
         CommandsMock[indexMock].setup(x => x.Description).returns('test');
         CommandsMock[indexMock].setup(x => x.Options).returns(new Array<string>(`${(Math.floor(Math.random() * (10000 + 1)))}`));
@@ -92,12 +141,14 @@ describe('Program', function () {
     });
 
     // A
-    let program = new Program(
-      SequelizeFactoryMock.object(),
+    const program = new Program(
+      ExitServiceMock.object(),
       ConfigurationMock.object(),
       CommandsServiceMock.object(),
-      LoggerServiceMock.object());
-    await program.Commander(CommanderMock.object());
+      MailServerRepositoryMock.object(),
+      LoggerServiceMock.object()
+    );
+    await program['Commander'](CommanderMock.object());
 
     // A
     CommanderMock.verify(x => x.version('1.42.16'), Times.Once());

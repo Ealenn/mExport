@@ -1,12 +1,12 @@
-import { IMailServer } from "../Database/Models/MailServer";
 import { IMailService } from "./Abstractions/IMailService";
-import { ImapSimple, connect as ImapConnect, getParts, Message, MessageBodyPart } from "imap-simple";
+import { ImapSimple, connect as ImapConnect, Message } from "imap-simple";
 import { IConfiguration } from "../Configuration";
 import { inject, injectable } from "tsyringe";
 import { ILoggerService } from "./Abstractions/ILoggerService";
-import { IEmail } from "../Database/Models/Email";
-import _ from "lodash";
-import { simpleParser } from "mailparser"
+import _, { isArray } from "lodash";
+import { simpleParser } from "mailparser";
+import { MailServer } from "../Database/Models/MailServer";
+import { Email } from "../Database/Models/Email";
 
 /* istanbul ignore file */
 @injectable()
@@ -22,7 +22,7 @@ export class MailService implements IMailService {
     this._loggerService = loggerService;
   }
 
-  public async Download(server: ImapSimple, skip: number, take: number): Promise<Message[]> {
+  public async DownloadAsync(server: ImapSimple, skip: number, take: number): Promise<Message[]> {
     try {
       const searchPattern = `${skip + 1}:${skip + take}`;
       const emails = await server.search([searchPattern], {
@@ -37,7 +37,7 @@ export class MailService implements IMailService {
     }
   }
 
-  public async Count(server: ImapSimple): Promise<number> {
+  public async CountAsync(server: ImapSimple): Promise<number> {
     await server.openBox('INBOX');
     const emails = await server.search(['ALL'], {
       bodies: [],
@@ -46,29 +46,34 @@ export class MailService implements IMailService {
     return emails.length;
   }
 
-  public async GetEmail(message: Message, serverId: number): Promise<IEmail | null> {
+  public async GetEmailAsync(message: Message, server: MailServer): Promise<Email | null> {
     try {
-      let all = _.find(message.parts, { "which": "" });
-      let idHeader = "Imap-Id: " + message.attributes.uid + "\r\n";
+      const all = _.find(message.parts, { "which": "" });
+      const idHeader = "Imap-Id: " + message.attributes.uid + "\r\n";
 
-      let result = await simpleParser(idHeader+all?.body);
-      const email = {
-        serverId: serverId,
-        from: <string>result.from?.value[0].address,
-        to: <string>result.to?.value[0].address,
-        subject: <string>result.subject || 'EMPTY',
-        html: <string>result.html,
-        text: <string>result.text
-      };
+      const result = await simpleParser(idHeader+all?.body, {
+        decodeStrings: true,
+        encoding: "utf-8"
+      });
+
+      const email = new Email();
+
+      email.server = server;
+      email.from = result.from?.value[0].address || "EMPTY";
+      const to = isArray(result.to) ? result.to[0] : result.to;
+      email.to = to?.value.join(';') || "EMPTY";
+      email.subject = result.subject || 'EMPTY';
+      email.html = result.html || "EMPTY";
+      email.text = result.text || "EMPTY";
 
       return email;
     } catch(exception) {
       this._loggerService.Debug(exception);
-      return null
+      return null;
     }
   }
 
-  public async Connect(server: IMailServer): Promise<ImapSimple> {
+  public async ConnectAsync(server: MailServer): Promise<ImapSimple> {
     const imap = await ImapConnect({
       imap: {
         user: server.user,
@@ -76,6 +81,9 @@ export class MailService implements IMailService {
         host: server.server,
         port: server.port,
         tls: server.secure,
+        autotls: server.secure ? "required" : "never",
+        authTimeout: 3000,
+        keepalive: true,
         debug: this._configuration.Debug ? console.log : undefined
       }
     });

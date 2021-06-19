@@ -1,12 +1,10 @@
-import "reflect-metadata"
-
-import { Configuration } from '../src/Configuration'
+import "reflect-metadata";
+import { Configuration } from '../src/Configuration';
 
 describe('Configuration', function () {
 
   it('Getters', async function () {
-    // A;
-
+    // A
     // A
     const configuration = new Configuration();
 

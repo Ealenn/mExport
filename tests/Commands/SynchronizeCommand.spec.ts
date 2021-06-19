@@ -1,24 +1,22 @@
-import "reflect-metadata"
-
-import { Mock, It, Times, ExpectedGetPropertyExpression } from 'moq.ts';
-
+import "reflect-metadata";
+import { Mock, It, Times } from 'moq.ts';
 import SynchronizeCommand from "../../src/Commands/SynchronizeCommand";
-import { IMailServer, MailServer } from "../../src/Database/Models/MailServer";
+import { MailServer } from "../../src/Database/Models/MailServer";
 import { IMailService } from '../../src/Services/Abstractions/IMailService';
 import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
-import { MailServerRepository } from "../../src/Database/MailServerRepository";
+import { IMailServerRepository } from "../../src/Database/IMailServerRepository";
 import { ImapSimple, Message } from "imap-simple";
-import { IEmail } from "../../src/Database/Models/Email";
+import { Email } from "../../src/Database/Models/Email";
 
 describe('Commands/SynchronizeCommand', function () {
 
   let MailServiceMock: Mock<IMailService>;
-  let MailServerRepositoryMock: Mock<MailServerRepository>;
+  let MailServerRepositoryMock: Mock<IMailServerRepository>;
   let LoggerServiceMock: Mock<ILoggerService>;
 
   beforeEach(() => {
     MailServiceMock = new Mock<IMailService>();
-    MailServerRepositoryMock = new Mock<MailServerRepository>();
+    MailServerRepositoryMock = new Mock<IMailServerRepository>();
     LoggerServiceMock = new Mock<ILoggerService>();
 
     LoggerServiceMock.setup(x => x.Error).returns(() => {});
@@ -26,12 +24,12 @@ describe('Commands/SynchronizeCommand', function () {
   });
 
   it('No server', async function () {
-    // A;
-    MailServerRepositoryMock.setup(x => x.FindAll).returns(async () => new Array<IMailServer>());
+    // A
+    MailServerRepositoryMock.setup(x => x.FindAllAsync).returns(async () => new Array<MailServer>());
 
     // A
     const command = new SynchronizeCommand(MailServiceMock.object(), MailServerRepositoryMock.object(), LoggerServiceMock.object());
-    const result = await command.Action(<any>{});
+    const result = await command.ActionAsync(<any>{});
 
     // A
     LoggerServiceMock.verify(x => x.Error, Times.AtLeastOnce());
@@ -39,8 +37,8 @@ describe('Commands/SynchronizeCommand', function () {
   });
 
   it('Invalid Server, but continue', async function () {
-    // A;
-    const ServerExample = <IMailServer>{
+    // A
+    const ServerExample = <MailServer>{
       id: 1,
       user: 'example',
       password: 'example',
@@ -48,12 +46,12 @@ describe('Commands/SynchronizeCommand', function () {
       port: 21,
       secure: false
     };
-    MailServerRepositoryMock.setup(x => x.FindAll).returns(async () => new Array<IMailServer>(ServerExample));
-    MailServiceMock.setup(x => x.Connect(It.IsAny<IMailServer>())).throws('');
+    MailServerRepositoryMock.setup(x => x.FindAllAsync).returns(async () => new Array<MailServer>(ServerExample));
+    MailServiceMock.setup(x => x.ConnectAsync(It.IsAny<MailServer>())).throws('');
 
     // A
     const command = new SynchronizeCommand(MailServiceMock.object(), MailServerRepositoryMock.object(), LoggerServiceMock.object());
-    const result = await command.Action(<any>{});
+    const result = await command.ActionAsync(<any>{});
 
     // A
     LoggerServiceMock.verify(x => x.Error, Times.AtLeastOnce());
@@ -61,40 +59,40 @@ describe('Commands/SynchronizeCommand', function () {
   });
 
   it('Valid server with batch', async function () {
-    // A;
+    // A
     const ImapMock = new Mock<ImapSimple>();
-    const ServerExample = <IMailServer>{
-      id: 1,
-      user: 'example',
-      password: 'example',
-      server: 'nsa',
-      port: 21,
-      secure: false
-    };
-    MailServerRepositoryMock.setup(x => x.FindAll).returns(async () => new Array<IMailServer>(ServerExample));
-    MailServiceMock.setup(x => x.Connect(It.IsAny<IMailServer>())).returns(new Promise(_ => _(ImapMock.object())));
-    MailServerRepositoryMock.setup(x => x.PurgeEmails(ServerExample)).returns(new Promise(_ => _(42)));
-    MailServiceMock.setup(x => x.Count(It.IsAny<ImapSimple>())).returns(new Promise<number>(_ => _(3)));
-    MailServiceMock.setup(x => x.Download(It.IsAny<ImapSimple>(), It.IsAny<number>(), It.IsAny<number>()))
+    const ServerExample = new MailServer();
+    ServerExample.id = 1;
+    ServerExample.user = 'example';
+    ServerExample.password = 'example';
+    ServerExample.server = 'nsa';
+    ServerExample.port = 21;
+    ServerExample.secure = false;
+
+    MailServerRepositoryMock.setup(x => x.FindAllAsync).returns(async () => new Array<MailServer>(ServerExample));
+    MailServiceMock.setup(x => x.ConnectAsync(ServerExample)).returns(new Promise(_ => _(ImapMock.object())));
+    MailServerRepositoryMock.setup(x => x.PurgeEmailsAsync(ServerExample)).returns(new Promise(_ => _(42)));
+    MailServiceMock.setup(x => x.CountAsync(It.IsAny<ImapSimple>())).returns(new Promise<number>(_ => _(3)));
+    MailServiceMock.setup(x => x.DownloadAsync(It.IsAny<ImapSimple>(), It.IsAny<number>(), It.IsAny<number>()))
       .returns(new Promise(_ => _(new Array<Message>(
         new Mock<Message>().object()
       ))));
-    MailServiceMock.setup(x => x.GetEmail(It.IsAny(), It.IsAny())).returns(new Promise(_ => _(<IEmail>{})));
-    MailServerRepositoryMock.setup(x => x.SaveEmail(It.IsAny<IEmail>())).returns(new Promise(_ => _(true)));
+    MailServiceMock.setup(x => x.GetEmailAsync(It.IsAny(), It.IsAny())).returns(new Promise(_ => _(<Email>{})));
+    MailServerRepositoryMock.setup(x => x.SaveEmailAsync(It.IsAny<Email>())).returns(new Promise(_ => _(new Email())));
 
     // A
     const command = new SynchronizeCommand(MailServiceMock.object(), MailServerRepositoryMock.object(), LoggerServiceMock.object());
-    const result = await command.Action(<any>{
+    const result = await command.ActionAsync(<any>{
       batch: '1'
     });
 
     // A
-    MailServiceMock.verify(x => x.Connect(ServerExample), Times.Once());
-    MailServerRepositoryMock.verify(x => x.PurgeEmails(ServerExample), Times.Once());
-    MailServiceMock.verify(x => x.Count(It.IsAny()), Times.Once());
-    MailServiceMock.verify(x => x.Download(It.IsAny(), It.IsAny(), It.IsAny()), Times.Exactly(3));
-    MailServiceMock.verify(x => x.GetEmail(It.IsAny(), It.IsAny()), Times.Exactly(3));
-    MailServerRepositoryMock.verify(x => x.SaveEmail(It.IsAny<IEmail>()), Times.Exactly(3));
+    MailServiceMock.verify(x => x.ConnectAsync(ServerExample), Times.Once());
+    MailServerRepositoryMock.verify(x => x.PurgeEmailsAsync(ServerExample), Times.Once());
+    MailServiceMock.verify(x => x.CountAsync(It.IsAny()), Times.Once());
+    MailServiceMock.verify(x => x.DownloadAsync(It.IsAny(), It.IsAny(), It.IsAny()), Times.Exactly(3));
+    MailServiceMock.verify(x => x.GetEmailAsync(It.IsAny(), It.IsAny()), Times.Exactly(3));
+    MailServerRepositoryMock.verify(x => x.SaveEmailAsync(It.IsAny<Email>()), Times.Exactly(3));
     expect(result).toBeTruthy();
   });
 });
