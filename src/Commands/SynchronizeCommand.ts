@@ -1,12 +1,11 @@
 import { inject, injectable } from 'tsyringe';
-import ICommand from './Abstractions/ICommand';
-import { IMailService } from '../Services/Abstractions/IMailService';
-import { IMailServerRepository } from '../Database/IMailServerRepository';
-import { ILoggerService } from '../Services/Abstractions/ILoggerService';
+import { ICommand } from './Abstractions';
+import { IMailService, ILoggerService } from '../Services/Abstractions';
+import { IMailServerRepository } from '../Database/Abstractions';
 import { ImapSimple } from 'imap-simple';
 
 @injectable()
-export default class SynchronizeCommand implements ICommand
+export class SynchronizeCommand implements ICommand
 {
   private _batchSize = 10;
   private _mailService: IMailService;

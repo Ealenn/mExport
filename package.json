@@ -11,12 +11,13 @@
   },
   "scripts": {
     "build": "tsc -p .",
+    "postbuild": "cpx 'src/www/**' 'dist/www'",
     "build:watch": "rm -rf ./dist && tsc -p . -w",
+    "copy:watch": "npx cpx src/www dist/www -u -w -v",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint . --fix",
-    "test": "jest --coverage",
     "local": "npm run build && npm i -g && mexport",
-    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
+    "test": "jest --coverage",
     "docker:run": "docker run --rm mexport:dev",
     "docker:build": "docker buildx build . -t mexport:dev"
   },
@@ -59,7 +60,9 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "commander": "^6.2.0",
+    "cpx": "^1.5.0",
     "figlet": "^1.5.0",
+    "handlebars": "^4.7.7",
     "imap-simple": "^5.0.0",
     "lodash": "^4.17.21",
     "mailparser": "^3.2.0",

@@ -4,7 +4,6 @@ import { Email } from './Email';
 @Entity()
 export class MailServer
 {
-
     @PrimaryGeneratedColumn()
     public id?: number;
 

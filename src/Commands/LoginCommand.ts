@@ -1,13 +1,11 @@
 import { inject, injectable } from 'tsyringe';
-import ICommand from './Abstractions/ICommand';
-import { MailServer } from '../Database/Models/MailServer';
-import { IQuestionService } from '../Services/Abstractions/IQuestionService';
-import { IMailService } from '../Services/Abstractions/IMailService';
-import { ILoggerService } from '../Services/Abstractions/ILoggerService';
-import { IMailServerRepository } from '../Database/IMailServerRepository';
+import { ICommand } from './Abstractions';
+import { MailServer } from '../Database/Entities/MailServer';
+import { ILoggerService, IMailService, IQuestionService } from '../Services/Abstractions';
+import { IMailServerRepository } from '../Database/Abstractions/IMailServerRepository';
 
 @injectable()
-export default class LoginCommand implements ICommand
+export class LoginCommand implements ICommand
 {
   private _mailServerRepository: IMailServerRepository;
   private _questionService: IQuestionService;

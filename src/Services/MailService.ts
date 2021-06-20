@@ -1,12 +1,10 @@
-import { IMailService } from './Abstractions/IMailService';
 import { ImapSimple, connect as ImapConnect, Message } from 'imap-simple';
 import { IConfiguration } from '../Configuration';
 import { inject, injectable } from 'tsyringe';
-import { ILoggerService } from './Abstractions/ILoggerService';
-import _, { isArray } from 'lodash';
+import { ILoggerService, IMailService } from './Abstractions';
+import _ from 'lodash';
 import { simpleParser } from 'mailparser';
-import { MailServer } from '../Database/Models/MailServer';
-import { Email } from '../Database/Models/Email';
+import { Email, MailServer } from '../Database/Entities';
 
 /* istanbul ignore file */
 @injectable()
@@ -68,12 +66,12 @@ export class MailService implements IMailService
       const email = new Email();
 
       email.server = server;
-      email.from = result.from?.value[0].address || 'EMPTY';
-      const to = isArray(result.to) ? result.to[0] : result.to;
-      email.to = to?.value.join(';') || 'EMPTY';
-      email.subject = result.subject || 'EMPTY';
-      email.html = result.html || 'EMPTY';
-      email.text = result.text || 'EMPTY';
+      email.from = result.from?.value[0].address as string;
+      email.from_domain = email.from.split('@')[1];
+      email.to = server.user;
+      email.subject = result.subject as string || 'empty';
+      email.content_html = result.html as string || 'empty';
+      email.content_text = result.text as string || 'empty';
 
       return email;
     }

@@ -1,12 +1,10 @@
 import 'reflect-metadata';
 import { Mock, It, Times } from 'moq.ts';
-import SynchronizeCommand from '../../src/Commands/SynchronizeCommand';
-import { MailServer } from '../../src/Database/Models/MailServer';
-import { IMailService } from '../../src/Services/Abstractions/IMailService';
-import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
-import { IMailServerRepository } from '../../src/Database/IMailServerRepository';
+import { SynchronizeCommand } from '../../src/Commands';
+import { IMailService, ILoggerService } from '../../src/Services/Abstractions';
+import { IMailServerRepository } from '../../src/Database/Abstractions';
 import { ImapSimple, Message } from 'imap-simple';
-import { Email } from '../../src/Database/Models/Email';
+import { Email, MailServer } from '../../src/Database/Entities';
 
 describe('Commands/SynchronizeCommand', function()
 {

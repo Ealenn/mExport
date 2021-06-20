@@ -3,11 +3,9 @@ import { Mock, It, Times } from 'moq.ts';
 import * as Commander from 'commander';
 import { IConfiguration } from '../src/Configuration';
 import Program from '../src/Program';
-import { ICommandsService } from '../src/Services/Abstractions/ICommandsService';
-import { ILoggerService } from '../src/Services/Abstractions/ILoggerService';
-import ICommand from '../src/Commands/Abstractions/ICommand';
-import { IMailServerRepository } from '../src/Database/IMailServerRepository';
-import { IExitService } from '../src/Services/Abstractions/IExitService';
+import { ICommandsService, ILoggerService, IExitService } from '../src/Services/Abstractions';
+import { ICommand } from '../src/Commands/Abstractions';
+import { IMailServerRepository } from '../src/Database/Abstractions';
 
 class TestProgram extends Program
 {

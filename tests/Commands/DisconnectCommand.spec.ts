@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import { Mock, Times } from 'moq.ts';
-import DisconnectCommand from '../../src/Commands/DisconnectCommand';
-import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
-import { IMailServerRepository } from '../../src/Database/IMailServerRepository';
-import { MailServer } from '../../src/Database/Models/MailServer';
+import { DisconnectCommand } from '../../src/Commands';
+import { ILoggerService } from '../../src/Services/Abstractions';
+import { IMailServerRepository } from '../../src/Database/Abstractions';
+import { MailServer } from '../../src/Database/Entities';
 
 describe('Commands/DisconnectCommand', function()
 {

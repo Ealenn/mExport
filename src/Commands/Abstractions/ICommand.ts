@@ -1,4 +1,4 @@
-export default interface ICommand {
+export interface ICommand {
   Command: string;
   Description: string;
   Options: string[];

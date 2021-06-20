@@ -1,12 +1,10 @@
 import 'reflect-metadata';
 import { Mock, It, Times } from 'moq.ts';
 import * as prompts from 'prompts';
-import LoginCommand from '../../src/Commands/LoginCommand';
-import { MailServer } from '../../src/Database/Models/MailServer';
-import { IQuestionService } from '../../src/Services/Abstractions/IQuestionService';
-import { IMailService } from '../../src/Services/Abstractions/IMailService';
-import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
-import { IMailServerRepository } from '../../src/Database/IMailServerRepository';
+import { LoginCommand } from '../../src/Commands';
+import { MailServer } from '../../src/Database/Entities';
+import { IQuestionService, ILoggerService, IMailService } from '../../src/Services/Abstractions';
+import { IMailServerRepository } from '../../src/Database/Abstractions';
 import { ImapSimple } from 'imap-simple';
 
 describe('Commands/LoginCommand', function()

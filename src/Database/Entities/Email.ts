@@ -14,14 +14,17 @@ export class Email
     public from: string
 
     @Column()
+    public from_domain: string
+
+    @Column()
     public to: string
 
     @Column()
     public subject: string
 
     @Column()
-    public html: string
+    public content_html: string
 
     @Column()
-    public text: string
+    public content_text: string
 }
