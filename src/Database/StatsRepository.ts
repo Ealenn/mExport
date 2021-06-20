@@ -17,7 +17,7 @@ export class StatsRepository implements IStatsRepository
     this._loggerService = loggerService;
   }
 
-  public async Domain(): Promise<DomainStats[]>
+  public async DomainAsync(): Promise<DomainStats[]>
   {
     this._loggerService.Information('Generate Domain Stats...');
     const queryResult = await MailServerRepository._manager.query('SELECT "from_domain" as "Host", "to" as "On", COUNT(*) AS "Count" FROM "email" GROUP BY "Host" ORDER BY "Count" DESC;');

@@ -29,9 +29,9 @@ export class DashboardService implements IDashboardService
   {
     const context = {
       Configuration: this._configuration,
-      Domains: await this._statsRepository.Domain()
+      Domains: await this._statsRepository.DomainAsync()
     } as ContextStats;
-    await this._handlebarsService.SaveFile(path, context);
+    await this._handlebarsService.SaveFileAsync(path, context);
     this._loggerService.Information(`[DONE] The dashboard is available here ${path}`);
     return true;
   }

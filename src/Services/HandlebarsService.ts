@@ -22,7 +22,7 @@ export class HandlebarsService implements IHandlebarsService
     this._initialiseHandlebars();
   }
 
-  public async SaveFile(folderPath: string, context: ContextStats): Promise<void>
+  public async SaveFileAsync(folderPath: string, context: ContextStats): Promise<void>
   {
     this._loggerService.Information('Dashboard initialization...');
     const filePath = path.join(folderPath, 'index.html');

@@ -28,7 +28,7 @@ describe('Services/DashboardService', function()
   {
     // A
     HandlebarsServiceMock
-      .setup(x => x.SaveFile(It.IsAny<string>(), It.IsAny<ContextStats>()))
+      .setup(x => x.SaveFileAsync(It.IsAny<string>(), It.IsAny<ContextStats>()))
       .returns(new Promise(_ => _()));
     const fakeDomainsStats = [
       {
@@ -37,7 +37,7 @@ describe('Services/DashboardService', function()
         On: 'example@host.net'
       } as DomainStats
     ] as DomainStats[];
-    StatsRepositoryMock.setup(x => x.Domain()).returns(new Promise(_ => _(fakeDomainsStats)));
+    StatsRepositoryMock.setup(x => x.DomainAsync()).returns(new Promise(_ => _(fakeDomainsStats)));
 
     // A
     const service = new DashboardService(
@@ -49,7 +49,7 @@ describe('Services/DashboardService', function()
 
     // A
     LoggerServiceMock.verify(x => x.Information, Times.Once());
-    HandlebarsServiceMock.verify(x => x.SaveFile(__dirname, It.Is<ContextStats>(param =>
+    HandlebarsServiceMock.verify(x => x.SaveFileAsync(__dirname, It.Is<ContextStats>(param =>
     {
       return param.Domains.includes(fakeDomainsStats[0]) &&
       param.Configuration.DatabasePath == __dirname;
