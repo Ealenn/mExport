@@ -1,10 +1,11 @@
-import { MailServer } from './Models/MailServer';
-import { Email } from './Models/Email';
+import { Email, MailServer } from './Entities';
 import { ILoggerService } from '../Services/Abstractions/ILoggerService';
 import { inject, singleton } from 'tsyringe';
 import { Connection, createConnection, EntityManager } from 'typeorm';
 import { getManager } from 'typeorm';
-import { IMailServerRepository } from './IMailServerRepository';
+import { IMailServerRepository } from './Abstractions/IMailServerRepository';
+import { DomainStats } from './Models';
+import _ from 'lodash';
 
 /* istanbul ignore file */
 @singleton()
@@ -28,7 +29,8 @@ export class MailServerRepository implements IMailServerRepository
       database: database,
       synchronize: true,
       entities: [
-        __dirname + '/Models/*.js'
+        __dirname + '/Entities/*.js',
+        __dirname + '/Entities/*.ts'
       ],
       logging: logging ? 'all' : undefined
     });
@@ -68,5 +70,21 @@ export class MailServerRepository implements IMailServerRepository
       server: mailServer
     });
     return result.affected || 0;
+  }
+
+  /**
+   * STATS
+   */
+  public async StatsDomain(): Promise<DomainStats[]>
+  {
+    let result = new Array<DomainStats>();
+    const servers = await this.FindAllAsync();
+    for (let serverCursor = 0; serverCursor < servers.length; serverCursor++)
+    {
+      const queryResult = await MailServerRepository._manager.query(`SELECT "from_domain" as "Host", "to" as "On", COUNT(*) AS "Count" FROM "email" WHERE "serverId" = "${servers[serverCursor].id}" GROUP BY "Host" ORDER BY "Count" DESC;`);
+      const stats = queryResult as DomainStats[];
+      result = _.concat(result, stats);
+    }
+    return result;
   }
 }

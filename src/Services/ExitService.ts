@@ -1,5 +1,5 @@
 import { injectable } from 'tsyringe';
-import { IExitService } from './Abstractions/IExitService';
+import { IExitService } from './Abstractions';
 
 /* istanbul ignore file */
 @injectable()

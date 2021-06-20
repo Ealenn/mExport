@@ -1,0 +1,16 @@
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Domain</th>
+      <th scope="col">On</th>
+      <th scope="col">Count</th>
+    </tr>
+  </thead>
+  {{#each Domains}}
+  <tr>
+    <td>{{ this.Host }}</td>
+    <td>{{ this.On }}</td>
+    <td>{{ this.Count }}</td>
+  </tr>
+  {{/each}}
+</table>

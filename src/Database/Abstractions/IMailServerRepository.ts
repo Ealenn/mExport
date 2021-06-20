@@ -1,5 +1,5 @@
-import { Email } from './Models/Email';
-import { MailServer } from './Models/MailServer';
+import { Email } from '../Entities/Email';
+import { MailServer } from '../Entities/MailServer';
 
 export interface IMailServerRepository {
   ConnectAsync(database: string, logging: boolean): Promise<void>;

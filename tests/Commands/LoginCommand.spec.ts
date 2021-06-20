@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { Mock, It, Times } from 'moq.ts';
 import * as prompts from 'prompts';
-import LoginCommand from '../../src/Commands/LoginCommand';
-import { MailServer } from '../../src/Database/Models/MailServer';
+import { LoginCommand } from '../../src/Commands';
+import { MailServer } from '../../src/Database/Entities/MailServer';
 import { IQuestionService } from '../../src/Services/Abstractions/IQuestionService';
 import { IMailService } from '../../src/Services/Abstractions/IMailService';
 import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';

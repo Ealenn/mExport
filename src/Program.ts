@@ -4,7 +4,7 @@ import { IConfiguration } from './Configuration';
 import { ICommandsService } from './Services/Abstractions/ICommandsService';
 import { ILoggerService } from './Services/Abstractions/ILoggerService';
 import { IExitService } from './Services/Abstractions/IExitService';
-import { IMailServerRepository } from './Database/IMailServerRepository';
+import { IMailServerRepository } from './Database/Abstractions/IMailServerRepository';
 
 @injectable()
 export default class Program
@@ -39,6 +39,7 @@ export default class Program
   protected async Landing(): Promise<Program>
   {
     this._loggerService.Ascii(this._configuration.Name);
+    this._loggerService.Information(this._configuration.Url);
     this._loggerService.Information(`Version: ${this._configuration.Version}`);
     this._loggerService.Information(`Path: ${this._configuration.DatabasePath}`);
     return this;

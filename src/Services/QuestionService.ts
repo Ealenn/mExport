@@ -1,5 +1,5 @@
 import { PromptObject, PromptType, PrevCaller, prompt } from 'prompts';
-import { IQuestionService } from './Abstractions/IQuestionService';
+import { IQuestionService } from './Abstractions';
 
 /* istanbul ignore file */
 export class QuestionService implements IQuestionService

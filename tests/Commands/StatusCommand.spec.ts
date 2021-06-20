@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Mock, It, Times } from 'moq.ts';
-import StatusCommand from '../../src/Commands/StatusCommand';
-import { MailServer } from '../../src/Database/Models/MailServer';
+import { StatusCommand } from '../../src/Commands';
+import { MailServer } from '../../src/Database/Entities/MailServer';
 import { IMailService } from '../../src/Services/Abstractions/IMailService';
 import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
 import { IMailServerRepository } from '../../src/Database/IMailServerRepository';

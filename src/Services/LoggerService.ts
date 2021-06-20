@@ -1,5 +1,5 @@
 import { IConfiguration } from '../Configuration';
-import { ILoggerService } from './Abstractions/ILoggerService';
+import { ILoggerService } from './Abstractions';
 import chalk from 'chalk';
 import figlet from 'figlet';
 import { injectable, inject } from 'tsyringe';

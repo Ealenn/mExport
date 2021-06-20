@@ -1,11 +1,11 @@
 import { inject, injectable } from 'tsyringe';
-import ICommand from './Abstractions/ICommand';
+import { ICommand } from './Abstractions';
 import { IMailService } from '../Services/Abstractions/IMailService';
-import { IMailServerRepository } from '../Database/IMailServerRepository';
+import { IMailServerRepository } from '../Database/Abstractions/IMailServerRepository';
 import { ILoggerService } from '../Services/Abstractions/ILoggerService';
 
 @injectable()
-export default class StatusCommand implements ICommand
+export class StatusCommand implements ICommand
 {
   private _mailService: IMailService;
   private _mailServerRepository: IMailServerRepository;

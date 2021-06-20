@@ -64,18 +64,32 @@ mexport login \
 mexport synchronize
 ```
 
+### Dashboard
+
+``` bash
+mexport dashboard
+```
+
+``` bash
+# Example
+cd ~
+mkdir mexport-dashboard
+mexport dashboard -p $PWD/mexport-dashboard
+```
+
 ## Development
 
 ``` bash
 node ./dist/Main.js [command]
 ```
 
+### NPM Scripts
+
 - `build`: Build project
 - `build:watch` : Hot-Reload build
 
-- `test`: Run tests with code coverage
 - `local`: Install mexport with local project
-- `refresh`: Refresh npm packages
+- `test`: Run tests with code coverage
 
 - `docker:run`: Run mexport **dev** tag container with interactive flag
 - `docker:build`: Build mexport Docker Image with **dev** tag
