@@ -1,9 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { ICommand } from './Abstractions';
 import { MailServer } from '../Database/Entities/MailServer';
-import { IQuestionService } from '../Services/Abstractions/IQuestionService';
-import { IMailService } from '../Services/Abstractions/IMailService';
-import { ILoggerService } from '../Services/Abstractions/ILoggerService';
+import { ILoggerService, IMailService, IQuestionService } from '../Services/Abstractions';
 import { IMailServerRepository } from '../Database/Abstractions/IMailServerRepository';
 
 @injectable()

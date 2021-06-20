@@ -1,4 +1,4 @@
-import { ILoggerService } from '../Services/Abstractions/ILoggerService';
+import { ILoggerService } from '../Services/Abstractions';
 import { inject, singleton } from 'tsyringe';
 import { DomainStats } from './Models';
 import { IStatsRepository } from './Abstractions';

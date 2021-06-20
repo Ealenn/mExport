@@ -1,9 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { ICommand } from './Abstractions';
-import { ILoggerService } from '../Services/Abstractions/ILoggerService';
-import { IQuestionService } from '../Services/Abstractions/IQuestionService';
 import * as fs from 'fs';
-import { IDashboardService } from '../Services/Abstractions/IDashboardService';
+import { IDashboardService, IQuestionService, ILoggerService } from '../Services/Abstractions';
 
 @injectable()
 export class DashboardCommand implements ICommand

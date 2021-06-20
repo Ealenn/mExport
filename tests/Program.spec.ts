@@ -5,7 +5,7 @@ import { IConfiguration } from '../src/Configuration';
 import Program from '../src/Program';
 import { ICommandsService, ILoggerService, IExitService } from '../src/Services/Abstractions';
 import { ICommand } from '../src/Commands/Abstractions';
-import { IMailServerRepository } from '../src/Database/IMailServerRepository';
+import { IMailServerRepository } from '../src/Database/Abstractions';
 
 class TestProgram extends Program
 {

@@ -1,10 +1,8 @@
 import { injectable, inject } from 'tsyringe';
 import * as Commander from 'commander';
 import { IConfiguration } from './Configuration';
-import { ICommandsService } from './Services/Abstractions/ICommandsService';
-import { ILoggerService } from './Services/Abstractions/ILoggerService';
-import { IExitService } from './Services/Abstractions/IExitService';
-import { IMailServerRepository } from './Database/Abstractions/IMailServerRepository';
+import { IExitService, ILoggerService, ICommandsService } from './Services/Abstractions';
+import { IMailServerRepository } from './Database/Abstractions';
 
 @injectable()
 export default class Program

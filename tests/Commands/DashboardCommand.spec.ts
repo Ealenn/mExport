@@ -1,9 +1,7 @@
 import 'reflect-metadata';
 import { Mock, Times } from 'moq.ts';
 import { DashboardCommand } from '../../src/Commands';
-import { ILoggerService } from '../../src/Services/Abstractions/ILoggerService';
-import { IDashboardService } from '../../src/Services/Abstractions/IDashboardService';
-import { IQuestionService } from '../../src/Services/Abstractions/IQuestionService';
+import { IQuestionService, IDashboardService, ILoggerService } from '../../src/Services/Abstractions';
 
 describe('Commands/DashboardCommand', function()
 {

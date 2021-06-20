@@ -1,9 +1,9 @@
 import { Email, MailServer } from './Entities';
-import { ILoggerService } from '../Services/Abstractions/ILoggerService';
+import { ILoggerService } from '../Services/Abstractions';
 import { inject, singleton } from 'tsyringe';
 import { Connection, createConnection, EntityManager } from 'typeorm';
 import { getManager } from 'typeorm';
-import { IMailServerRepository } from './Abstractions/IMailServerRepository';
+import { IMailServerRepository } from './Abstractions';
 import { DomainStats } from './Models';
 import _ from 'lodash';
 

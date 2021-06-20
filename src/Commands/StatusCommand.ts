@@ -1,8 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { ICommand } from './Abstractions';
-import { IMailService } from '../Services/Abstractions/IMailService';
 import { IMailServerRepository } from '../Database/Abstractions/IMailServerRepository';
-import { ILoggerService } from '../Services/Abstractions/ILoggerService';
+import { ILoggerService, IMailService } from '../Services/Abstractions';
 
 @injectable()
 export class StatusCommand implements ICommand
